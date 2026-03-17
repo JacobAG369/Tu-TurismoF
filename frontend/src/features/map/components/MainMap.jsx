@@ -3,7 +3,6 @@ import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
 import { useQuery } from '@tanstack/react-query';
 import L from 'leaflet';
 import { renderToString } from 'react-dom/server';
-import 'leaflet/dist/leaflet.css';
 
 import { useThemeStore } from '../../../store/useThemeStore';
 import { mapApi } from '../../../api/map';
@@ -51,7 +50,7 @@ export default function MainMap() {
   const defaultCenter = [19.4326, -99.1332];
 
   return (
-    <div className="relative w-full h-full flex-1 min-h-[500px] z-0 bg-slate-100 dark:bg-slate-900">
+    <div className="relative w-full h-full flex-1 min-h-[600px] z-0 bg-slate-100 dark:bg-slate-900">
       
       {isLoading && (
         <div className="absolute inset-0 z-[500] flex items-center justify-center bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
@@ -69,7 +68,7 @@ export default function MainMap() {
         center={defaultCenter}
         zoom={13}
         zoomControl={false}
-        className="w-full h-full z-0 font-sans"
+        className="w-full h-full min-h-[600px] z-0 font-sans"
         style={{ width: '100%', height: '100%', zIndex: 0 }}
       >
         <TileLayer

@@ -34,10 +34,10 @@ export const RegisterPage = () => {
     
     // Map to API required payload if needed. Based on standard names:
     const result = await register({
-      name: formData.nombre,
-      last_name: formData.apellido,
+      nombre: formData.nombre,
+      apellido: formData.apellido,
       email: formData.email,
-      phone: formData.telefono,
+      telefono: formData.telefono,
       password: formData.password,
       password_confirmation: formData.password_confirmation,
     });

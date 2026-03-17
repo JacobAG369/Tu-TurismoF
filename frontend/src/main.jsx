@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './index.css'
+import 'leaflet/dist/leaflet.css'
 import { useThemeStore } from './store/useThemeStore'
 
 // Initialize the theme on app load

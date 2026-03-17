@@ -1,4 +1,4 @@
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { createRootRoute, Outlet, useRouterState } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -7,6 +7,10 @@ import { useThemeStore } from '../store/useThemeStore';
 export const Route = createRootRoute({
   component: () => {
     const theme = useThemeStore((state) => state.theme);
+    const pathname = useRouterState({
+      select: (state) => state.location.pathname,
+    });
+    const isMapRoute = pathname.startsWith('/map');
 
     useEffect(() => {
       if (theme === 'dark') {
@@ -22,7 +26,7 @@ export const Route = createRootRoute({
         <main className="flex-1 flex flex-col">
           <Outlet />
         </main>
-        <Footer />
+        {!isMapRoute && <Footer />}
       </div>
     );
   },
