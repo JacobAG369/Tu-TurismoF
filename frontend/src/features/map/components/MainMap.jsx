@@ -1,13 +1,16 @@
-import { useState, useMemo, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { useMemo, useEffect } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import { useQuery } from '@tanstack/react-query';
+import { Heart } from 'lucide-react';
 import L from 'leaflet';
 import { renderToString } from 'react-dom/server';
 
 import { useThemeStore } from '../../../store/useThemeStore';
+import { useFavoritesStore } from '../../../store/useFavoritesStore';
 import { mapApi } from '../../../api/map';
 import { useMapStore } from '../../../store/useMapStore';
-import MapFilters from './MapFilters';
+import { useMapWebsockets } from '../hooks/useMapWebsockets';
+import FloatingFilters from './FloatingFilters';
 import { getCategoryIcon } from '../utils/icons';
 import PlaceDetailCard from './PlaceDetailCard';
 
@@ -33,13 +36,54 @@ function MapUpdater({ markers, selectedCategory }) {
   return null;
 }
 
+function MarkersLayer({ markers, favoriteIds, onMarkerClick }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const layerGroup = L.layerGroup().addTo(map);
+
+    markers.forEach((marker) => {
+      if (!marker.ubicacion || !Array.isArray(marker.ubicacion.coordinates)) {
+        return;
+      }
+
+      const [lng, lat] = marker.ubicacion.coordinates;
+      const IconComponent = getCategoryIcon(marker.tipo_recurso || marker.tipo);
+      const isFavorite = favoriteIds.includes(marker.id);
+
+      const iconHtml = `<div class="relative w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 shadow-brand-500/40 transition-transform hover:scale-110">${renderToString(<IconComponent size={20} />)}${isFavorite ? `<span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-lg">${renderToString(<Heart size={12} fill="currentColor" />)}</span>` : ''}</div>`;
+
+      const divIcon = L.divIcon({
+        html: iconHtml,
+        className: 'custom-leaflet-icon-container bg-transparent border-none',
+        iconSize: [40, 40],
+        iconAnchor: [20, 40],
+      });
+
+      const leafletMarker = L.marker([lat, lng], { icon: divIcon });
+      leafletMarker.on('click', () => onMarkerClick(marker.id));
+      layerGroup.addLayer(leafletMarker);
+    });
+
+    return () => {
+      layerGroup.clearLayers();
+      map.removeLayer(layerGroup);
+    };
+  }, [favoriteIds, map, markers, onMarkerClick]);
+
+  return null;
+}
+
 export default function MainMap() {
   const theme = useThemeStore((state) => state.theme);
-  const { activeCategory, setActiveCategory, selectedMarkerId, setSelectedMarkerId } = useMapStore();
+  const favoriteIds = useFavoritesStore((state) => state.favorites);
+  const { activeCategory, selectedMarkerId, setSelectedMarkerId } = useMapStore();
+
+  useMapWebsockets();
 
   const { data: markers = [], isLoading, error } = useQuery({
     queryKey: ['map-markers', activeCategory],
-    queryFn: () => mapApi.getMarkers(activeCategory !== 'all' ? activeCategory : null),
+    queryFn: () => mapApi.getMarkers(activeCategory),
   });
 
   const selectedMarker = useMemo(() => {
@@ -75,41 +119,14 @@ export default function MainMap() {
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
           url={theme === 'dark' ? DarkTiles : LightTiles}
         />
-        
-        {markers.map((marker) => {
-          if (!marker.ubicacion || !marker.ubicacion.coordinates) return null;
-          const [lng, lat] = marker.ubicacion.coordinates;
-          const IconComponent = getCategoryIcon(marker.categoria?.nombre || marker.tipo);
-          
-          // Re-create the divIcon HTML string directly
-          const iconHtml = `<div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 shadow-brand-500/40 transition-transform hover:scale-110">
-            ${renderToString(<IconComponent size={20} />)}
-          </div>`;
 
-          const divIcon = L.divIcon({
-            html: iconHtml,
-            className: 'custom-leaflet-icon-container bg-transparent border-none',
-            iconSize: [40, 40],
-            iconAnchor: [20, 40],
-          });
-
-          return (
-            <Marker
-              key={marker.id}
-              position={[lat, lng]}
-              icon={divIcon}
-              eventHandlers={{
-                click: () => setSelectedMarkerId(marker.id),
-              }}
-            />
-          );
-        })}
+        <MarkersLayer markers={markers} favoriteIds={favoriteIds} onMarkerClick={setSelectedMarkerId} />
 
         <MapUpdater markers={markers} selectedCategory={activeCategory} />
       </MapContainer>
 
       {/* Floating UI */}
-      <MapFilters activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
+      <FloatingFilters />
       
       <PlaceDetailCard marker={selectedMarker} onClose={() => setSelectedMarkerId(null)} />
     </div>

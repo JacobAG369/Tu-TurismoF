@@ -11,11 +11,13 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AdminRouteImport } from './routes/admin'
 
 const RegisterLazyRouteImport = createFileRoute('/register')()
 const ProfileLazyRouteImport = createFileRoute('/profile')()
 const MapLazyRouteImport = createFileRoute('/map')()
 const LoginLazyRouteImport = createFileRoute('/login')()
+const FavoritesLazyRouteImport = createFileRoute('/favorites')()
 const ConfigLazyRouteImport = createFileRoute('/config')()
 const IndexLazyRouteImport = createFileRoute('/')()
 
@@ -39,11 +41,21 @@ const LoginLazyRoute = LoginLazyRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+const FavoritesLazyRoute = FavoritesLazyRouteImport.update({
+  id: '/favorites',
+  path: '/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/favorites.lazy').then((d) => d.Route))
 const ConfigLazyRoute = ConfigLazyRouteImport.update({
   id: '/config',
   path: '/config',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/config.lazy').then((d) => d.Route))
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexLazyRoute = IndexLazyRouteImport.update({
   id: '/',
   path: '/',
@@ -52,7 +64,9 @@ const IndexLazyRoute = IndexLazyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/admin': typeof AdminRoute
   '/config': typeof ConfigLazyRoute
+  '/favorites': typeof FavoritesLazyRoute
   '/login': typeof LoginLazyRoute
   '/map': typeof MapLazyRoute
   '/profile': typeof ProfileLazyRoute
@@ -60,7 +74,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/admin': typeof AdminRoute
   '/config': typeof ConfigLazyRoute
+  '/favorites': typeof FavoritesLazyRoute
   '/login': typeof LoginLazyRoute
   '/map': typeof MapLazyRoute
   '/profile': typeof ProfileLazyRoute
@@ -69,7 +85,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexLazyRoute
+  '/admin': typeof AdminRoute
   '/config': typeof ConfigLazyRoute
+  '/favorites': typeof FavoritesLazyRoute
   '/login': typeof LoginLazyRoute
   '/map': typeof MapLazyRoute
   '/profile': typeof ProfileLazyRoute
@@ -77,13 +95,31 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/config' | '/login' | '/map' | '/profile' | '/register'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/config'
+    | '/favorites'
+    | '/login'
+    | '/map'
+    | '/profile'
+    | '/register'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/config' | '/login' | '/map' | '/profile' | '/register'
+  to:
+    | '/'
+    | '/admin'
+    | '/config'
+    | '/favorites'
+    | '/login'
+    | '/map'
+    | '/profile'
+    | '/register'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/config'
+    | '/favorites'
     | '/login'
     | '/map'
     | '/profile'
@@ -92,7 +128,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  AdminRoute: typeof AdminRoute
   ConfigLazyRoute: typeof ConfigLazyRoute
+  FavoritesLazyRoute: typeof FavoritesLazyRoute
   LoginLazyRoute: typeof LoginLazyRoute
   MapLazyRoute: typeof MapLazyRoute
   ProfileLazyRoute: typeof ProfileLazyRoute
@@ -129,11 +167,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/favorites': {
+      id: '/favorites'
+      path: '/favorites'
+      fullPath: '/favorites'
+      preLoaderRoute: typeof FavoritesLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/config': {
       id: '/config'
       path: '/config'
       fullPath: '/config'
       preLoaderRoute: typeof ConfigLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -148,7 +200,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  AdminRoute: AdminRoute,
   ConfigLazyRoute: ConfigLazyRoute,
+  FavoritesLazyRoute: FavoritesLazyRoute,
   LoginLazyRoute: LoginLazyRoute,
   MapLazyRoute: MapLazyRoute,
   ProfileLazyRoute: ProfileLazyRoute,

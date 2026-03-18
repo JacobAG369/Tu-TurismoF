@@ -8,10 +8,9 @@ import {
 
 export const CATEGORIES = [
   { id: 'all', label: 'Todos', icon: MapPin },
-  { id: 'monumentos', label: 'Monumentos', icon: Landmark },
+  { id: 'lugares', label: 'Lugares', icon: Landmark },
   { id: 'restaurantes', label: 'Restaurantes', icon: Utensils },
   { id: 'eventos', label: 'Eventos', icon: Calendar },
-  { id: 'hoteles', label: 'Hoteles', icon: BedDouble },
 ];
 
 export const getCategoryIcon = (categoryName) => {

@@ -1,32 +1,24 @@
 import React from 'react';
-import { X, MapPin, Phone, Globe, Clock, Star } from 'lucide-react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { favoritesApi } from '../../../api/favorites';
+import { Heart, MapPin, Phone, Globe, Clock, Star, X } from 'lucide-react';
+import { Button } from '../../../components/ui/button';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useFavorites } from '../../../hooks/useFavorites';
 
 export default function PlaceDetailCard({ marker, onClose }) {
   const { isAuthenticated } = useAuthStore();
-  const queryClient = useQueryClient();
-
-  // Optionally, you might want to fetch whether it's already a favorite
-  // Let's assume for now we just have a toggle action
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: (id) => favoritesApi.toggleFavorite(id),
-    onSuccess: () => {
-      // Invalidate favorites if needed
-      queryClient.invalidateQueries({ queryKey: ['favorite-places'] });
-      queryClient.invalidateQueries({ queryKey: ['favorite-events'] });
-    },
-  });
+  const { isFavorite, toggleFavorite, isUpdatingFavorite } = useFavorites();
 
   if (!marker) return null;
+
+  const favorited = isFavorite(marker.id);
 
   const handleFavoriteClick = () => {
     if (!isAuthenticated) {
       alert('Debes iniciar sesión para agregar a favoritos');
       return;
     }
-    toggleFavoriteMutation.mutate(marker.id);
+
+    toggleFavorite(marker);
   };
 
   return (
@@ -51,8 +43,8 @@ export default function PlaceDetailCard({ marker, onClose }) {
           
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent pointer-events-none" />
 
-          <button 
-            onClick={onClose}
+            <button 
+              onClick={onClose}
             className="absolute top-3 right-3 p-1.5 bg-black/40 hover:bg-black/60 text-white rounded-full backdrop-blur-md transition-colors z-10"
             aria-label="Cerrar detalles"
           >
@@ -117,17 +109,19 @@ export default function PlaceDetailCard({ marker, onClose }) {
 
           {/* Action Buttons */}
           <div className="flex gap-2 mt-2">
-            <button className="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold py-2 rounded-xl transition-colors shadow-lg shadow-brand-500/20">
+            <Button className="flex-1 bg-brand-500 hover:bg-brand-600 text-white shadow-lg shadow-brand-500/20 dark:bg-brand-500 dark:text-white dark:hover:bg-brand-600">
               Ver detalles
-            </button>
-            <button 
+            </Button>
+            <Button
               onClick={handleFavoriteClick}
-              disabled={toggleFavoriteMutation.isPending}
-              className="p-2 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center justify-center text-slate-400 hover:text-red-500 disabled:opacity-50"
-              aria-label="Agregar a favoritos"
+              disabled={isUpdatingFavorite}
+              variant="outline"
+              size="icon"
+              className={favorited ? 'border-red-200 bg-red-50 text-red-500 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400' : ''}
+              aria-label={favorited ? 'Quitar de favoritos' : 'Agregar a favoritos'}
             >
-              <Star size={20} className={toggleFavoriteMutation.isPending ? "animate-pulse" : ""} />
-            </button>
+              <Heart size={20} className={[favorited ? 'fill-current' : '', isUpdatingFavorite ? 'animate-pulse' : ''].join(' ')} />
+            </Button>
           </div>
         </div>
       </div>

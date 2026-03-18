@@ -1,16 +1,22 @@
 import api from './axios';
 
-/**
- * API endpoints for managing favorites
- */
 export const favoritesApi = {
-  /**
-   * Toggle a place/event as favorite
-   * @param {string} lugarId ID of the place or event
-   * @returns {Promise<Object>} Response object containing status and message
-   */
-  toggleFavorite: async (lugarId) => {
-    const response = await api.post('/favoritos', { lugar_id: lugarId });
-    return response.data;
-  }
+  getFavorites: async () => {
+    const response = await api.get('/favoritos');
+    return response.data.data || [];
+  },
+
+  addFavorite: async (resource) => {
+    const response = await api.post('/favoritos', {
+      tipo: resource.tipo || resource.tipo_recurso,
+      referencia_id: resource.id,
+    });
+
+    return response.data.data;
+  },
+
+  removeFavorite: async (resourceId) => {
+    const response = await api.delete(`/favoritos/${resourceId}`);
+    return response.data.data;
+  },
 };

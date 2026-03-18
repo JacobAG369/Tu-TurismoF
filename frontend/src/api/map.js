@@ -9,12 +9,9 @@ export const mapApi = {
    * @param {string|null} categoryId 
    * @returns {Promise<Array>} List of markers
    */
-  getMarkers: async (categoryId = null) => {
-    const params = {};
-    if (categoryId) {
-      params.categoria_id = categoryId;
-    }
-    const response = await api.get('/mapa/marcadores', { params });
+  getMarkers: async (categoryId = 'all') => {
+    const category = categoryId || 'all';
+    const response = await api.get(`/mapa/marcadores?categoria_id=${encodeURIComponent(category)}`);
     return response.data.data;
   },
   
