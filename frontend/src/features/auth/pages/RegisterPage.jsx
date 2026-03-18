@@ -28,7 +28,7 @@ export const RegisterPage = () => {
     clearError();
     // Assuming backend validates confirmation, but checking here is good practice too
     if (formData.password !== formData.password_confirmation) {
-        useAuthStore.setState({ error: "Passwords do not match" });
+        useAuthStore.setState({ error: "Las contraseñas no coinciden." });
         return;
     }
     
@@ -52,8 +52,8 @@ export const RegisterPage = () => {
       <div className="w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Create an Account</h2>
-            <p className="text-slate-500 dark:text-slate-400">Join Tu-Turismo and start exploring.</p>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Crear una Cuenta</h2>
+            <p className="text-slate-500 dark:text-slate-400">Únete a Tu-Turismo y comienza a explorar.</p>
           </div>
 
           {error && (
@@ -68,7 +68,7 @@ export const RegisterPage = () => {
               {/* Nombre */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  First Name
+                  Nombre
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -79,8 +79,8 @@ export const RegisterPage = () => {
                     name="nombre"
                     value={formData.nombre}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
-                    placeholder="John"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
+                    placeholder="Juan"
                     required
                   />
                 </div>
@@ -89,7 +89,7 @@ export const RegisterPage = () => {
               {/* Apellido */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Last Name
+                  Apellido
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -100,8 +100,8 @@ export const RegisterPage = () => {
                     name="apellido"
                     value={formData.apellido}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
-                    placeholder="Doe"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
+                    placeholder="Pérez"
                     required
                   />
                 </div>
@@ -110,7 +110,7 @@ export const RegisterPage = () => {
               {/* Email */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Email Address
+                  Correo Electrónico
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -121,8 +121,8 @@ export const RegisterPage = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
-                    placeholder="you@example.com"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
+                    placeholder="tucorreo@ejemplo.com"
                     required
                   />
                 </div>
@@ -131,7 +131,7 @@ export const RegisterPage = () => {
               {/* Teléfono */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Phone Number
+                  Número de Teléfono
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -142,7 +142,7 @@ export const RegisterPage = () => {
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
                     placeholder="+1 (555) 000-0000"
                     required
                   />
@@ -152,7 +152,7 @@ export const RegisterPage = () => {
               {/* Password */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Password
+                  Contraseña
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -163,7 +163,7 @@ export const RegisterPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
                     placeholder="••••••••"
                     required
                     minLength={8}
@@ -174,7 +174,7 @@ export const RegisterPage = () => {
               {/* Confirm Password */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Confirm Password
+                  Confirmar Contraseña
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -185,7 +185,7 @@ export const RegisterPage = () => {
                     name="password_confirmation"
                     value={formData.password_confirmation}
                     onChange={handleChange}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
+                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700/50 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors"
                     placeholder="••••••••"
                     required
                     minLength={8}
@@ -197,14 +197,14 @@ export const RegisterPage = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center items-center gap-2 py-3 px-4 mt-8 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 mt-8 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-800 dark:bg-slate-700 hover:bg-slate-900 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900 focus:ring-slate-500 dark:focus:ring-slate-400 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
                 <>
                   <UserPlus size={20} />
-                  Register Account
+                  Crear Cuenta
                 </>
               )}
             </button>
@@ -213,9 +213,9 @@ export const RegisterPage = () => {
         
         <div className="px-8 py-6 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 text-center">
           <p className="text-sm text-slate-600 dark:text-slate-400">
-            Already have an account?{' '}
+            ¿Ya tienes una cuenta?{' '}
             <Link to="/login" className="font-medium text-slate-900 dark:text-white hover:underline">
-              Sign in here
+              Inicia sesión aquí
             </Link>
           </p>
         </div>

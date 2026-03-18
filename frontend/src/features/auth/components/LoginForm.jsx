@@ -7,8 +7,8 @@ import { Input } from '../../../components/ui/input';
 import { useLogin } from '../hooks/useLogin';
 
 const loginSchema = z.object({
-  email: z.string().trim().min(1, 'El correo es obligatorio.').email('Ingresa un correo valido.'),
-  password: z.string().min(1, 'La contrasena es obligatoria.').min(8, 'La contrasena debe tener al menos 8 caracteres.'),
+  email: z.string().trim().min(1, 'El correo es obligatorio.').email('Ingresa un correo válido.'),
+  password: z.string().min(1, 'La contraseña es obligatoria.').min(8, 'La contraseña debe tener al menos 8 caracteres.'),
 });
 
 export function LoginForm({ onSuccess }) {
@@ -34,9 +34,9 @@ export function LoginForm({ onSuccess }) {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6" noValidate>
         {loginMutation.isError && (
-          <div className="flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-red-600 dark:border-red-800 dark:bg-red-900/30 dark:text-red-400">
+          <div className="flex items-center gap-3 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 p-4 text-red-600 dark:text-red-400">
             <AlertCircle size={20} className="shrink-0" />
-            <p className="text-sm">{loginMutation.error?.response?.data?.message || 'No se pudo iniciar sesion.'}</p>
+            <p className="text-sm">{loginMutation.error?.response?.data?.message || 'No se pudo iniciar sesión.'}</p>
           </div>
         )}
 
@@ -45,7 +45,7 @@ export function LoginForm({ onSuccess }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="login-email">Correo electronico</FormLabel>
+              <FormLabel htmlFor="login-email">Correo electrónico</FormLabel>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                 <FormControl>
@@ -71,9 +71,9 @@ export function LoginForm({ onSuccess }) {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between gap-4">
-                <FormLabel htmlFor="login-password">Contrasena</FormLabel>
-                <a href="#" className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
-                  Olvide mi contrasena
+                <FormLabel htmlFor="login-password">Contraseña</FormLabel>
+                <a href="#" className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white">
+                  Olvidé mi contraseña
                 </a>
               </div>
               <div className="relative">
@@ -98,14 +98,14 @@ export function LoginForm({ onSuccess }) {
         <button
           type="submit"
           disabled={loginMutation.isPending}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-transparent bg-slate-800 px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-slate-700 dark:hover:bg-slate-600"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border border-transparent bg-slate-800 dark:bg-slate-700 px-4 py-3 text-sm font-medium text-white shadow-sm transition-colors hover:bg-slate-900 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400 focus:ring-offset-2 dark:focus:ring-offset-slate-900 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {loginMutation.isPending ? (
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
           ) : (
             <>
               <LogIn size={20} />
-              Iniciar sesion
+              Iniciar sesión
             </>
           )}
         </button>

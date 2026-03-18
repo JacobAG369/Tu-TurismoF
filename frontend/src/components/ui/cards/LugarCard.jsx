@@ -1,6 +1,8 @@
 import { Star, Clock, MapPin } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useNavigate } from '@tanstack/react-router';
+import { useMapStore } from '../../../store/useMapStore';
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -13,10 +15,25 @@ export const LugarCard = ({
   rating = 0, 
   duration, 
   location,
+  id,
+  coords,
   className 
 }) => {
+  const navigate = useNavigate();
+  const setMapCenter = useMapStore((state) => state.setMapCenter);
+
+  const handleCardClick = () => {
+    if (coords) {
+      setMapCenter({ lat: coords.lat, lng: coords.lng });
+    }
+    navigate({ to: '/map' });
+  };
+
   return (
-    <div className={cn("bg-white rounded-2xl overflow-hidden shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 hover:shadow-lg transition-all duration-300 flex flex-col h-full group", className)}>
+    <div 
+      onClick={handleCardClick}
+      className={cn("bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 dark:border-slate-700 hover:shadow-lg transition-all duration-300 flex flex-col h-full group cursor-pointer", className)}
+    >
       {/* Image Section */}
       <div className="relative h-48 w-full overflow-hidden">
         <img 
@@ -37,11 +54,11 @@ export const LugarCard = ({
       {/* Content Section */}
       <div className="p-5 flex flex-col flex-1">
         <div className="flex justify-between items-start gap-2 mb-2">
-          <h3 className="text-xl font-bold text-slate-900 leading-tight line-clamp-2">
+          <h3 className="text-xl font-bold text-slate-900 dark:text-white leading-tight line-clamp-2">
             {title}
           </h3>
           {rating > 0 && (
-            <div className="flex items-center gap-1 bg-amber-50 text-amber-600 px-2 py-1 rounded-md">
+            <div className="flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-1 rounded-md">
               <Star className="w-4 h-4 fill-current" />
               <span className="text-sm font-bold">{rating.toFixed(1)}</span>
             </div>
@@ -49,19 +66,19 @@ export const LugarCard = ({
         </div>
 
         {location && (
-          <div className="flex items-center text-slate-500 text-sm mb-4">
-            <MapPin className="w-4 h-4 mr-1 text-slate-400" />
+          <div className="flex items-center text-slate-500 dark:text-slate-400 text-sm mb-4">
+            <MapPin className="w-4 h-4 mr-1 text-slate-400 dark:text-slate-500" />
             <span className="line-clamp-1">{location}</span>
           </div>
         )}
 
         {/* Footer */}
-        <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between">
-          <div className="flex items-center text-slate-600 text-sm font-medium">
+        <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div className="flex items-center text-slate-600 dark:text-slate-400 text-sm font-medium">
             <Clock className="w-4 h-4 mr-1.5 text-primary-500" />
             {duration || '2-3 horas'}
           </div>
-          <button className="text-sm font-semibold text-primary-600 hover:text-primary-700 bg-primary-50 hover:bg-primary-100 px-4 py-2 rounded-full transition-colors duration-200">
+          <button className="text-sm font-semibold text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 bg-primary-50 dark:bg-primary-900/30 hover:bg-primary-100 dark:hover:bg-primary-900/50 px-4 py-2 rounded-full transition-colors duration-200">
             Ver más
           </button>
         </div>

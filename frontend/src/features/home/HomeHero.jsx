@@ -6,7 +6,7 @@ export function HomeHero() {
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1518105779142-d971f228b8b0?q=80&w=2070&auto=format&fit=crop")' }}
+        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop")' }}
       >
         <div className="absolute inset-0 bg-slate-900/60 mix-blend-multiply"></div>
       </div>
@@ -24,9 +24,9 @@ export function HomeHero() {
           <Link to="/map" className="px-8 py-3 rounded-full font-semibold bg-cyan-500 text-white hover:bg-cyan-400 transition-colors shadow-lg hover:shadow-cyan-400/50 w-full sm:w-auto text-center inline-block">
             Explorar lugares
           </Link>
-          <button className="px-8 py-3 rounded-full font-semibold bg-violet-400 text-white hover:bg-violet-300 transition-colors shadow-lg hover:shadow-violet-400/50 w-full sm:w-auto">
+          <Link to="/eventos" className="px-8 py-3 rounded-full font-semibold bg-violet-400 text-white hover:bg-violet-300 transition-colors shadow-lg hover:shadow-violet-400/50 w-full sm:w-auto text-center inline-block">
             Ver Eventos
-          </button>
+          </Link>
         </div>
       </div>
     </section>
