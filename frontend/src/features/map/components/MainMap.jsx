@@ -6,7 +6,7 @@ import L from 'leaflet';
 import { renderToString } from 'react-dom/server';
 
 import { useThemeStore } from '../../../store/useThemeStore';
-import { useFavoritesStore } from '../../../store/useFavoritesStore';
+import { useFavorites } from '../../../hooks/useFavorites';
 import { mapApi } from '../../../api/map';
 import { useMapStore } from '../../../store/useMapStore';
 import { useMapWebsockets } from '../hooks/useMapWebsockets';
@@ -76,8 +76,13 @@ function MarkersLayer({ markers, favoriteIds, onMarkerClick }) {
 
 export default function MainMap() {
   const theme = useThemeStore((state) => state.theme);
-  const favoriteIds = useFavoritesStore((state) => state.favorites);
+  const { favoriteItems } = useFavorites();
   const { activeCategory, selectedMarkerId, setSelectedMarkerId } = useMapStore();
+
+  // Convert favoriteItems array to favoriteIds for MarkersLayer
+  const favoriteIds = useMemo(() => {
+    return favoriteItems.map((fav) => fav.referencia_id);
+  }, [favoriteItems]);
 
   useMapWebsockets();
 
