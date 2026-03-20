@@ -66,6 +66,8 @@ export const adminApi = {
         },
         totalUsers: data.totales?.usuarios || 0,
         totalResources: (data.totales?.lugares || 0) + (data.totales?.eventos || 0) + (data.totales?.restaurantes || 0),
+        growthRate: data.tasa_crecimiento || 0,
+        pendingAlerts: data.alertas_pendientes || 0,
       };
     } catch (_error) {
       // Return mock data if endpoint doesn't exist
@@ -74,6 +76,8 @@ export const adminApi = {
         resourcesByCategory: { lugares: 25, eventos: 15, restaurantes: 30 },
         totalUsers: 133,
         totalResources: 70,
+        growthRate: 12.5,
+        pendingAlerts: 3,
       };
     }
   },
