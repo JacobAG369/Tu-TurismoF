@@ -44,6 +44,26 @@ const schemas = {
 function getDefaultValues(resourceType, initialData) {
   const coordinates = initialData?.ubicacion?.coordinates || [];
 
+  // Parse fecha properly - handle ISO strings, timestamps, and date objects
+  let fechaValue = '';
+  if (initialData?.fecha) {
+    const fechaStr = String(initialData.fecha);
+    // If it's already in YYYY-MM-DD format, use as is
+    if (/^\d{4}-\d{2}-\d{2}/.test(fechaStr)) {
+      fechaValue = fechaStr.slice(0, 10);
+    } else {
+      // Try to parse as ISO date and convert to YYYY-MM-DD
+      try {
+        const date = new Date(fechaStr);
+        if (!isNaN(date.getTime())) {
+          fechaValue = date.toISOString().slice(0, 10);
+        }
+      } catch (e) {
+        fechaValue = '';
+      }
+    }
+  }
+
   return {
     nombre: initialData?.nombre || '',
     descripcion: initialData?.descripcion || '',
@@ -52,7 +72,7 @@ function getDefaultValues(resourceType, initialData) {
     telefono: initialData?.telefono || '',
     horario: initialData?.horario || '',
     web: initialData?.web || '',
-    fecha: initialData?.fecha ? String(initialData.fecha).slice(0, 10) : '',
+    fecha: fechaValue,
     latitud: coordinates[1] ?? '',
     longitud: coordinates[0] ?? '',
     rating: initialData?.rating ?? initialData?.rating_promedio ?? 5,

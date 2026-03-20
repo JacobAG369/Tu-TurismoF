@@ -1,7 +1,16 @@
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import catedralImg from '../../assets/catedral.jpg';
+import { useMapStore } from '../../store/useMapStore';
 
 export function HomeHero() {
+  const navigate = useNavigate();
+  const setActiveCategory = useMapStore((state) => state.setActiveCategory);
+
+  const handleViewEvents = () => {
+    setActiveCategory('eventos');
+    navigate({ to: '/map' });
+  };
+
   return (
     <section className="relative h-[600px] w-full flex items-center justify-center">
       {/* Background Image with Overlay */}
@@ -25,9 +34,12 @@ export function HomeHero() {
           <Link to="/map" className="px-8 py-3 rounded-full font-semibold bg-cyan-500 text-white hover:bg-cyan-400 transition-colors shadow-lg hover:shadow-cyan-400/50 w-full sm:w-auto text-center inline-block">
             Explorar lugares
           </Link>
-          <Link to="/eventos" className="px-8 py-3 rounded-full font-semibold bg-violet-400 text-white hover:bg-violet-300 transition-colors shadow-lg hover:shadow-violet-400/50 w-full sm:w-auto text-center inline-block">
+          <button 
+            onClick={handleViewEvents}
+            className="px-8 py-3 rounded-full font-semibold bg-violet-400 text-white hover:bg-violet-300 transition-colors shadow-lg hover:shadow-violet-400/50 w-full sm:w-auto text-center inline-block cursor-pointer"
+          >
             Ver Eventos
-          </Link>
+          </button>
         </div>
       </div>
     </section>
