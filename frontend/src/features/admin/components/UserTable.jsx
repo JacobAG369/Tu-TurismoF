@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { adminApi } from '../../../api/admin';
 import { Button } from '../../../components/ui/button';
@@ -12,6 +12,7 @@ import { UserFormDialog } from './UserFormDialog';
 export function UserTable() {
   const [roleFilter, setRoleFilter] = useState('all');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -26,9 +27,34 @@ export function UserTable() {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast({ title: 'Usuario creado', description: 'La tabla se actualizo correctamente.' });
       setDialogOpen(false);
+      setEditingUser(null);
     },
     onError: (error) => {
       toast({ title: 'No se pudo crear el usuario', description: error.response?.data?.message || 'Ocurrio un error al guardar.', variant: 'destructive' });
+    },
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: ({ userId, payload }) => adminApi.updateUser(userId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast({ title: 'Usuario actualizado', description: 'Los cambios se aplicaron correctamente.' });
+      setDialogOpen(false);
+      setEditingUser(null);
+    },
+    onError: (error) => {
+      toast({ title: 'No se pudo actualizar el usuario', description: error.response?.data?.message || 'Ocurrio un error al actualizar.', variant: 'destructive' });
+    },
+  });
+
+  const deleteUserMutation = useMutation({
+    mutationFn: (userId) => adminApi.deleteUser(userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      toast({ title: 'Usuario eliminado', description: 'El usuario fue eliminado correctamente.' });
+    },
+    onError: (error) => {
+      toast({ title: 'No se pudo eliminar el usuario', description: error.response?.data?.message || 'Ocurrio un error al eliminar.', variant: 'destructive' });
     },
   });
 
@@ -41,6 +67,27 @@ export function UserTable() {
 
     return items.filter((user) => user.rol === roleFilter);
   }, [roleFilter, usersQuery.data]);
+
+  const openCreateDialog = () => {
+    setEditingUser(null);
+    setDialogOpen(true);
+  };
+
+  const openEditDialog = (user) => {
+    setEditingUser(user);
+    setDialogOpen(true);
+  };
+
+  const handleSubmit = (values) => {
+    if (editingUser) {
+      updateUserMutation.mutate({ 
+        userId: editingUser.id || editingUser._id, 
+        payload: values 
+      });
+    } else {
+      createUserMutation.mutate(values);
+    }
+  };
 
   return (
     <>
@@ -56,7 +103,7 @@ export function UserTable() {
               <option value="admin">Admin</option>
               <option value="turista">Turista</option>
             </Select>
-            <Button type="button" onClick={() => setDialogOpen(true)}>
+            <Button type="button" onClick={openCreateDialog}>
               <Plus size={16} className="mr-2" />
               Nuevo usuario
             </Button>
@@ -64,57 +111,72 @@ export function UserTable() {
         </CardHeader>
         <CardContent>
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Rol</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {usersQuery.isLoading ? (
-                Array.from({ length: 4 }).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell colSpan={3}>
-                      <div className="h-6 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
-                  <TableRow key={user.id || user._id}>
-                    <TableCell className="font-medium text-slate-900 dark:text-white">{`${user.nombre} ${user.apellido ?? ''}`.trim()}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <span className={[
-                        'inline-flex rounded-full px-3 py-1 text-xs font-semibold',
-                        user.rol === 'admin'
-                          ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
-                          : 'bg-sky-100 text-sky-800 dark:bg-sky-950/40 dark:text-sky-300',
-                      ].join(' ')}>
-                        {user.rol}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={3} className="text-center text-slate-500 dark:text-slate-400">
-                    No hay usuarios para el filtro seleccionado.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
+             <TableHeader>
+               <TableRow>
+                 <TableHead>Nombre</TableHead>
+                 <TableHead>Email</TableHead>
+                 <TableHead>Rol</TableHead>
+                 <TableHead>Acciones</TableHead>
+               </TableRow>
+             </TableHeader>
+             <TableBody>
+               {usersQuery.isLoading ? (
+                 Array.from({ length: 4 }).map((_, index) => (
+                   <TableRow key={index}>
+                     <TableCell colSpan={4}>
+                       <div className="h-6 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+                     </TableCell>
+                   </TableRow>
+                 ))
+               ) : filteredUsers.length > 0 ? (
+                 filteredUsers.map((user) => (
+                   <TableRow key={user.id || user._id}>
+                     <TableCell className="font-medium text-slate-900 dark:text-white">{`${user.nombre} ${user.apellido ?? ''}`.trim()}</TableCell>
+                     <TableCell>{user.email}</TableCell>
+                     <TableCell>
+                       <span className={[
+                         'inline-flex rounded-full px-3 py-1 text-xs font-semibold',
+                         user.rol === 'admin'
+                           ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
+                           : 'bg-sky-100 text-sky-800 dark:bg-sky-950/40 dark:text-sky-300',
+                       ].join(' ')}>
+                         {user.rol}
+                       </span>
+                     </TableCell>
+                     <TableCell className="flex gap-2">
+                       <Button type="button" variant="outline" size="sm" onClick={() => openEditDialog(user)}>
+                         <Edit2 className="w-4 h-4" />
+                       </Button>
+                       <Button type="button" variant="ghost" size="sm" onClick={() => deleteUserMutation.mutate(user.id || user._id)} disabled={deleteUserMutation.isPending} className="text-red-500 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30">
+                         <Trash2 className="w-4 h-4" />
+                       </Button>
+                     </TableCell>
+                   </TableRow>
+                 ))
+               ) : (
+                 <TableRow>
+                   <TableCell colSpan={4} className="text-center text-slate-500 dark:text-slate-400">
+                     No hay usuarios para el filtro seleccionado.
+                   </TableCell>
+                 </TableRow>
+               )}
+             </TableBody>
           </Table>
         </CardContent>
       </Card>
 
-      <UserFormDialog
-        open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onSubmit={(values) => createUserMutation.mutate(values)}
-        isPending={createUserMutation.isPending}
-      />
+       <UserFormDialog
+         open={dialogOpen}
+         onOpenChange={(open) => {
+           setDialogOpen(open);
+           if (!open) {
+             setEditingUser(null);
+           }
+         }}
+         initialData={editingUser}
+         onSubmit={handleSubmit}
+         isPending={createUserMutation.isPending || updateUserMutation.isPending}
+       />
     </>
   );
 }

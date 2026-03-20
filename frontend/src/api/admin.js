@@ -17,6 +17,16 @@ export const adminApi = {
     return response.data.data;
   },
 
+  updateUser: async (userId, payload) => {
+    const response = await api.put(`/usuarios/${userId}`, payload);
+    return response.data.data;
+  },
+
+  deleteUser: async (userId) => {
+    const response = await api.delete(`/usuarios/${userId}`);
+    return response.data.data;
+  },
+
   getResources: async (resourceType) => {
     const response = await api.get(RESOURCE_CONFIG[resourceType]);
     return response.data.data || [];

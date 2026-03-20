@@ -20,14 +20,12 @@ export function Header() {
         {/* Logo Area */}
         <div className="flex items-center gap-4">
           {/* Logo Image */}
-          <img 
-            src={tutuLogo} 
-            alt="Tu-Turismo Logo" 
-            className="h-10 w-10 object-contain flex-shrink-0"
+          <img
+            src={tutuLogo}
+            alt="Tu-Turismo Logo"
+            className="h-14 w-14 object-contain flex-shrink-0"
           />
-          <Link to="/" className="text-2xl font-extrabold text-primary tracking-tight">
-            Tu-Turismo
-          </Link>
+
         </div>
 
 
