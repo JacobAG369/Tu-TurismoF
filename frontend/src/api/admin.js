@@ -54,17 +54,24 @@ export const adminApi = {
   getStats: async () => {
     try {
       const response = await api.get('/admin/stats');
-      return response.data.data || {
-        usersByRole: {},
-        resourcesByCategory: {},
-        totalUsers: 0,
-        totalResources: 0,
+      const data = response.data.data;
+      
+      // Transform backend response to match frontend expectations
+      return {
+        usersByRole: data.roles || {},
+        resourcesByCategory: {
+          lugares: data.totales?.lugares || 0,
+          eventos: data.totales?.eventos || 0,
+          restaurantes: data.totales?.restaurantes || 0,
+        },
+        totalUsers: data.totales?.usuarios || 0,
+        totalResources: (data.totales?.lugares || 0) + (data.totales?.eventos || 0) + (data.totales?.restaurantes || 0),
       };
-    } catch (error) {
+    } catch (_error) {
       // Return mock data if endpoint doesn't exist
       return {
         usersByRole: { admin: 5, usuario: 120, moderador: 8 },
-        resourcesByCategory: { monumentos: 25, eventos: 15, restaurantes: 30 },
+        resourcesByCategory: { lugares: 25, eventos: 15, restaurantes: 30 },
         totalUsers: 133,
         totalResources: 70,
       };
@@ -88,7 +95,7 @@ export const adminApi = {
     try {
       const response = await api.get('/admin/backups');
       return response.data.data || [];
-    } catch (error) {
+    } catch (_error) {
       return [];
     }
   },

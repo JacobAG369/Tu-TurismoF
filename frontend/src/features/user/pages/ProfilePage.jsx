@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Settings, LogOut, MapPin, Mail, Phone, User, Calendar, Star } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useAuthStore } from '../../../store/useAuthStore';
+import { useLogoutMutation } from '../../auth/hooks/useLogoutMutation';
 import { getFavoritePlaces, getFavoriteEvents } from '../../../api/user';
 import { LugarCard } from '../../../components/ui/cards/LugarCard';
 import { EventoCard } from '../../../components/ui/cards/EventoCard';
@@ -9,10 +10,11 @@ import { SkeletonCard } from '../../../components/ui/cards/SkeletonCard';
 
 export function ProfilePage() {
   const navigate = useNavigate();
-  const { user, logout } = useAuthStore();
+  const { user } = useAuthStore();
+  const logoutMutation = useLogoutMutation();
 
   const handleLogout = async () => {
-    await logout();
+    await logoutMutation.mutateAsync();
     navigate({ to: '/login' });
   };
 
@@ -75,7 +77,7 @@ export function ProfilePage() {
             
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 text-sm font-medium mt-2">
               <MapPin className="w-4 h-4 text-primary-500" />
-              {user?.direccion || 'Arequipa, Perú'}
+              {user?.direccion ? user.direccion : 'Ubicación no especificada'}
             </div>
           </div>
         </div>
@@ -94,16 +96,16 @@ export function ProfilePage() {
           <div className="flex flex-col gap-4">
             {isLoadingPlaces ? (
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-            ) : places?.data?.length > 0 ? (
-              places.data.map((lugar) => (
-                <LugarCard 
-                  key={lugar.id} 
-                  title={lugar.nombre}
-                  image={lugar.imagenes?.[0]}
-                  category={lugar.categoria?.nombre || 'Lugar'}
-                  rating={lugar.puntuacion_promedio}
-                  location={lugar.direccion || 'Arequipa'}
-                  className="!flex-row !h-32" // Override to a horizontal layout if card supports it, or keep vertical
+            ) : places && places.length > 0 ? (
+              places.map((favorito) => (
+               <LugarCard 
+                  key={favorito.referencia_id} 
+                  title={favorito.recurso.nombre}
+                  image={favorito.recurso.imagen}
+                  category="Lugar"
+                  rating={favorito.recurso.rating}
+                  location={favorito.recurso.ubicacion || favorito.recurso.localidad || 'Ubicación no especificada'}
+                  className="!flex-row !h-32"
                 />
               ))
             ) : (
@@ -124,15 +126,15 @@ export function ProfilePage() {
           <div className="flex flex-col gap-4">
             {isLoadingEvents ? (
               Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} />)
-            ) : events?.data?.length > 0 ? (
-              events.data.map((evento) => (
+            ) : events && events.length > 0 ? (
+              events.map((favorito) => (
                 <EventoCard 
-                  key={evento.id} 
-                  title={evento.nombre}
-                  image={evento.imagenes?.[0]}
-                  date={evento.fecha_inicio}
-                  location={evento.direccion || 'Arequipa'}
-                  category={evento.categoria?.nombre || 'Evento'}
+                  key={favorito.referencia_id} 
+                  title={favorito.recurso.nombre}
+                  image={favorito.recurso.imagen}
+                  date={favorito.recurso.fecha || new Date().toISOString().split('T')[0]}
+                  location={favorito.recurso.ubicacion || favorito.recurso.localidad || 'Ubicación no especificada'}
+                  category="Evento"
                 />
               ))
             ) : (
