@@ -1,4 +1,5 @@
 import tutuLogo from '../../assets/tutu.png';
+import { Bell, Heart, Shield, User } from 'lucide-react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { ThemeToggle } from '../ThemeToggle';
 import { useAuthStore } from '../../store/useAuthStore';
