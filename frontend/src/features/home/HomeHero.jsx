@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import catedralImg from '../../assets/catedral.jpg';
 
 export function HomeHero() {
   return (
@@ -6,7 +7,7 @@ export function HomeHero() {
       {/* Background Image with Overlay */}
       <div 
         className="absolute inset-0 z-0 bg-cover bg-center"
-        style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=2070&auto=format&fit=crop")' }}
+        style={{ backgroundImage: `url("${catedralImg}")` }}
       >
         <div className="absolute inset-0 bg-slate-900/60 mix-blend-multiply"></div>
       </div>
