@@ -75,7 +75,7 @@ function MarkersLayer({ markers, favoriteIds, onMarkerClick }) {
 }
 
 export default function MainMap() {
-  const theme = useThemeStore((state) => state.theme);
+  const mapTheme = useThemeStore((state) => state.mapTheme);
   const { favoriteItems } = useFavorites();
   const { activeCategory, selectedMarkerId, setSelectedMarkerId } = useMapStore();
 
@@ -122,7 +122,7 @@ export default function MainMap() {
       >
         <TileLayer
           attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url={theme === 'dark' ? DarkTiles : LightTiles}
+          url={mapTheme === 'dark' ? DarkTiles : LightTiles}
         />
 
         <MarkersLayer markers={markers} favoriteIds={favoriteIds} onMarkerClick={setSelectedMarkerId} />

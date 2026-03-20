@@ -37,7 +37,7 @@ export function BackupManager() {
         title: 'Backup creado',
         description: `Backup ${type === 'full' ? 'completo' : 'de ' + type} creado exitosamente.`,
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'No se pudo crear el backup. Intenta nuevamente.',
@@ -62,7 +62,7 @@ export function BackupManager() {
         title: 'Descarga iniciada',
         description: 'El backup se está descargando.',
       });
-    } catch (error) {
+    } catch (_error) {
       toast({
         title: 'Error',
         description: 'No se pudo descargar el backup.',

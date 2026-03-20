@@ -1,10 +1,11 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Lock, LogIn, Mail } from 'lucide-react';
+import { AlertCircle, Lock, LogIn, Mail, Eye, EyeOff } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../../components/ui/form';
 import { Input } from '../../../components/ui/input';
 import { useLogin } from '../hooks/useLogin';
+import { useState } from 'react';
 
 const loginSchema = z.object({
   email: z.string().trim().min(1, 'El correo es obligatorio.').email('Ingresa un correo válido.'),
@@ -13,6 +14,7 @@ const loginSchema = z.object({
 
 export function LoginForm({ onSuccess }) {
   const loginMutation = useLogin();
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -55,7 +57,6 @@ export function LoginForm({ onSuccess }) {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    placeholder="tucorreo@ejemplo.com"
                     className="pl-10"
                   />
                 </FormControl>
@@ -83,12 +84,22 @@ export function LoginForm({ onSuccess }) {
                     {...field}
                     id="login-password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
-                    placeholder="••••••••"
-                    className="pl-10"
+                    className="pl-10 pr-10"
                   />
                 </FormControl>
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff size={20} />
+                  ) : (
+                    <Eye size={20} />
+                  )}
+                </button>
               </div>
               <FormMessage />
             </FormItem>

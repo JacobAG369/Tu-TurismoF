@@ -15,7 +15,6 @@ export const LugarCard = ({
   rating = 0, 
   duration, 
   location,
-  id,
   coords,
   className 
 }) => {

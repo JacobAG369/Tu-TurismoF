@@ -37,7 +37,8 @@ export function UserFormDialog({ open, onOpenChange, onSubmit, isPending }) {
     if (open) {
       form.reset(defaultValues);
     }
-  }, [form, open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

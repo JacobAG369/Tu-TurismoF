@@ -11,7 +11,6 @@ export function useLogin() {
       return response.data?.data ?? response.data;
     },
     onMutate: () => {
-      useAuthStore.getState().setLoading(true);
       useAuthStore.getState().clearError();
     },
     onSuccess: (data) => {
@@ -20,9 +19,6 @@ export function useLogin() {
     },
     onError: (error) => {
       useAuthStore.getState().setError(error.response?.data?.message || 'No se pudo iniciar sesión.');
-    },
-    onSettled: () => {
-      useAuthStore.getState().setLoading(false);
     },
   });
 }

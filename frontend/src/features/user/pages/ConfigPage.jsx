@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Camera, Save, ArrowLeft, User, Mail, Phone, Lock, Globe } from 'lucide-react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -8,30 +8,33 @@ import { updateUserProfile } from '../../../api/user';
 export function ConfigPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user, login } = useAuthStore(); // We'll update the user in the store after a successful save
+  const { user } = useAuthStore(); // We'll update the user in the store after a successful save
   
-  const [formData, setFormData] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    telefono: '',
+  const [formData, setFormData] = useState(() => ({
+    nombre: user?.nombre || '',
+    apellido: user?.apellido || '',
+    email: user?.email || '',
+    telefono: user?.telefono || '',
     password: '',
     password_confirmation: '',
-  });
+  }));
 
   const [language, setLanguage] = useState('es');
 
+  // Memoize the initial form data based on user
+  const initialFormData = useMemo(() => ({
+    nombre: user?.nombre || '',
+    apellido: user?.apellido || '',
+    email: user?.email || '',
+    telefono: user?.telefono || '',
+    password: '',
+    password_confirmation: '',
+  }), [user?.nombre, user?.apellido, user?.email, user?.telefono]);
+
+  // Reset form data when user changes (e.g., after login)
   useEffect(() => {
-    if (user) {
-      setFormData((prev) => ({
-        ...prev,
-        nombre: user.nombre || '',
-        apellido: user.apellido || '',
-        email: user.email || '',
-        telefono: user.telefono || '',
-      }));
-    }
-  }, [user]);
+    setFormData(initialFormData);
+  }, [initialFormData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -5,6 +5,7 @@ import { adminApi } from '../../../api/admin';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import { useToast } from '../../../hooks/useToast';
+import { parseImageUploadError } from '../../../lib/imageErrorHandler';
 import { ResourceFormDialog } from '../components/ResourceFormDialog';
 import { ResourceTable } from '../components/ResourceTable';
 import { UserTable } from '../components/UserTable';
@@ -23,6 +24,7 @@ export function AdminDashboardPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [formErrors, setFormErrors] = useState({});
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -49,11 +51,31 @@ export function AdminDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-resources', resourceType] });
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
       toast({ title: 'Recurso creado', description: 'El contenido se guardo correctamente.' });
+      setFormErrors({});
       setDialogOpen(false);
       setEditingItem(null);
     },
     onError: (error) => {
-      toast({ title: 'No se pudo crear', description: error.response?.data?.message || 'Ocurrio un error al guardar.', variant: 'destructive' });
+      const { fieldErrors, message } = parseImageUploadError(error);
+      
+      // Si hay errores de validación (422), mostrarlos en el formulario
+      if (error?.response?.status === 422 && fieldErrors) {
+        setFormErrors(fieldErrors);
+        // Mostrar solo el primer error en toast
+        const firstError = Object.values(fieldErrors)[0]?.[0] || message;
+        toast({ 
+          title: 'Validación fallida', 
+          description: firstError,
+          variant: 'destructive' 
+        });
+      } else {
+        // Error genérico
+        toast({ 
+          title: 'No se pudo crear', 
+          description: message || 'Ocurrio un error al guardar.',
+          variant: 'destructive' 
+        });
+      }
     },
   });
 
@@ -63,11 +85,29 @@ export function AdminDashboardPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-resources', resourceType] });
       queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
       toast({ title: 'Recurso actualizado', description: 'Los cambios se aplicaron correctamente.' });
+      setFormErrors({});
       setDialogOpen(false);
       setEditingItem(null);
     },
     onError: (error) => {
-      toast({ title: 'No se pudo actualizar', description: error.response?.data?.message || 'Ocurrio un error al actualizar.', variant: 'destructive' });
+      const { fieldErrors, message } = parseImageUploadError(error);
+      
+      // Si hay errores de validación (422), mostrarlos en el formulario
+      if (error?.response?.status === 422 && fieldErrors) {
+        setFormErrors(fieldErrors);
+        const firstError = Object.values(fieldErrors)[0]?.[0] || message;
+        toast({ 
+          title: 'Validación fallida', 
+          description: firstError,
+          variant: 'destructive' 
+        });
+      } else {
+        toast({ 
+          title: 'No se pudo actualizar', 
+          description: message || 'Ocurrio un error al actualizar.',
+          variant: 'destructive' 
+        });
+      }
     },
   });
 
@@ -89,11 +129,13 @@ export function AdminDashboardPage() {
   );
 
   const openCreateDialog = () => {
+    setFormErrors({});
     setEditingItem(null);
     setDialogOpen(true);
   };
 
   const openEditDialog = (item) => {
+    setFormErrors({});
     setEditingItem(item);
     setDialogOpen(true);
   };
@@ -220,11 +262,13 @@ export function AdminDashboardPage() {
                 setDialogOpen(open);
                 if (!open) {
                   setEditingItem(null);
+                  setFormErrors({});
                 }
               }}
               resourceType={resourceType}
               categories={categoriesQuery.data || []}
               initialData={editingItem}
+              formErrors={formErrors}
               onSubmit={(formData) => {
                 if (editingItem) {
                   updateMutation.mutate(formData);
