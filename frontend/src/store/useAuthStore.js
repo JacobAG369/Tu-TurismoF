@@ -1,3 +1,4 @@
+// el estado de autenticación vive aquí. localStorage incluido. no es elegante, pero cumple su trabajo.
 import { create } from 'zustand';
 
 export const useAuthStore = create((set) => ({

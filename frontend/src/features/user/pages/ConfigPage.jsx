@@ -8,8 +8,8 @@ import { updateUserProfile } from '../../../api/user';
 export function ConfigPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const { user } = useAuthStore(); // We'll update the user in the store after a successful save
-  
+  const { user } = useAuthStore();
+
   const [formData, setFormData] = useState(() => ({
     nombre: user?.nombre || '',
     apellido: user?.apellido || '',
@@ -21,7 +21,6 @@ export function ConfigPage() {
 
   const [language, setLanguage] = useState('es');
 
-  // Memoize the initial form data based on user
   const initialFormData = useMemo(() => ({
     nombre: user?.nombre || '',
     apellido: user?.apellido || '',
@@ -31,7 +30,6 @@ export function ConfigPage() {
     password_confirmation: '',
   }), [user?.nombre, user?.apellido, user?.email, user?.telefono]);
 
-  // Reset form data when user changes (e.g., after login)
   useEffect(() => {
     setFormData(initialFormData);
   }, [initialFormData]);
@@ -44,14 +42,13 @@ export function ConfigPage() {
   const updateMutation = useMutation({
     mutationFn: updateUserProfile,
     onSuccess: (data) => {
-      // Assuming response returns { message, user }
+
       const updatedUser = data.user || data;
-      // Re-hydrate auth store if needed, or update localStorage
+
       const currentToken = localStorage.getItem('token');
       if (updatedUser && currentToken) {
         localStorage.setItem('user', JSON.stringify(updatedUser));
-        // Use Zustand to update state if necessary, or just force a reload, but better to have an `updateUser` in store
-        // We can just rely on window location reload for now or navigating back
+
       }
       queryClient.invalidateQueries(['user-profile']);
       navigate({ to: '/profile' });
@@ -76,8 +73,8 @@ export function ConfigPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="flex items-center gap-4 mb-8">
-        <Link 
-          to="/profile" 
+        <Link
+          to="/profile"
           className="flex items-center justify-center w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -90,9 +87,9 @@ export function ConfigPage() {
         <div className="space-y-6">
           <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col items-center">
             <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-slate-100 dark:border-slate-700 bg-slate-200 group">
-              <img 
-                src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.nombre || 'User'}&background=random`} 
-                alt="Profile" 
+              <img
+                src={user?.avatar || `https://ui-avatars.com/api/?name=${user?.nombre || 'User'}&background=random`}
+                alt="Profile"
                 className="w-full h-full object-cover transition-opacity group-hover:opacity-50"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -112,9 +109,9 @@ export function ConfigPage() {
             </h3>
             <div className="space-y-3">
               <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="language" 
+                <input
+                  type="radio"
+                  name="language"
                   value="es"
                   checked={language === 'es'}
                   onChange={() => setLanguage('es')}
@@ -123,9 +120,9 @@ export function ConfigPage() {
                 <span className="text-slate-700 dark:text-slate-300 font-medium">Español</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="radio" 
-                  name="language" 
+                <input
+                  type="radio"
+                  name="language"
                   value="en"
                   checked={language === 'en'}
                   onChange={() => setLanguage('en')}
@@ -141,13 +138,13 @@ export function ConfigPage() {
         <div className="md:col-span-2 bg-white dark:bg-slate-800 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Nombre</label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="nombre"
                     value={formData.nombre}
                     onChange={handleChange}
@@ -162,8 +159,8 @@ export function ConfigPage() {
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Apellido</label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     name="apellido"
                     value={formData.apellido}
                     onChange={handleChange}
@@ -177,8 +174,8 @@ export function ConfigPage() {
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Email</label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="email" 
+                  <input
+                    type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
@@ -193,8 +190,8 @@ export function ConfigPage() {
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Teléfono</label>
                 <div className="relative">
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="tel" 
+                  <input
+                    type="tel"
                     name="telefono"
                     value={formData.telefono}
                     onChange={handleChange}
@@ -208,8 +205,8 @@ export function ConfigPage() {
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Nueva Contraseña</label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
@@ -223,8 +220,8 @@ export function ConfigPage() {
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">Repetir Contraseña</label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input 
-                    type="password" 
+                  <input
+                    type="password"
                     name="password_confirmation"
                     value={formData.password_confirmation}
                     onChange={handleChange}
@@ -236,7 +233,7 @@ export function ConfigPage() {
             </div>
 
             <div className="pt-6 border-t border-slate-100 dark:border-slate-700 flex justify-end">
-              <button 
+              <button
                 type="submit"
                 disabled={updateMutation.isPending}
                 className="flex items-center gap-2 px-8 py-3 bg-slate-900 text-white dark:bg-primary-500 dark:hover:bg-primary-600 hover:bg-slate-800 rounded-xl font-bold transition-all disabled:opacity-70"

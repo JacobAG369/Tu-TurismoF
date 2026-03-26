@@ -1,3 +1,4 @@
+// favoritos con actualizaciones optimistas. si falla el servidor, el UI se revierte solo.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { favoritesApi } from '../api/favorites';
 import { useAuthStore } from '../store/useAuthStore';
@@ -22,61 +23,38 @@ function normalizeFavorite(resource) {
 }
 
 /**
- * useFavorites Hook
- * 
- * SINGLE SOURCE OF TRUTH: useQuery
- * - Favorites data lives only in React Query
- * - Mutations automatically sync via optimistic updates + invalidation
- * - isFavorite() derives state from query data using .some()
- * - No duplicate state in Zustand
- * 
- * Optimistic Updates:
- * - onMutate: Update UI immediately
- * - onError: Rollback if request fails
- * - onSettled: Refetch to ensure consistency
- * 
- * Architecture: Clean Architecture + TanStack Query best practices
+ * useFavorites Hook — fuente única de verdad via useQuery con actualizaciones optimistas.
  */
 export function useFavorites() {
   const queryClient = useQueryClient();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  // ============================================================================
-  // QUERY: Single source of truth for favorite data
-  // ============================================================================
+  // fuente única de verdad para favoritos
   const favoritesQuery = useQuery({
     queryKey: FAVORITES_QUERY_KEY,
     queryFn: favoritesApi.getFavorites,
     enabled: isAuthenticated,
-    staleTime: 60000, // 1 minute
-    placeholderData: [], // Show empty while loading
+    staleTime: 60000,
+    placeholderData: [],
   });
 
-  // ============================================================================
-  // DERIVED STATE: isFavorite derived from query data
-  // ============================================================================
+  // isFavorite se deriva de los datos del query
   const isFavorite = (resourceId) => {
     if (!favoritesQuery.data) return false;
     return favoritesQuery.data.some((item) => item.referencia_id === resourceId);
   };
 
-  // ============================================================================
-  // MUTATION: Add favorite with optimistic update
-  // ============================================================================
+  // agregar favorito con actualización optimista
   const addFavoriteMutation = useMutation({
     mutationFn: favoritesApi.addFavorite,
     
-    // Step 1: Optimistic update (immediate UI feedback)
     onMutate: async (resource) => {
       const optimisticFavorite = normalizeFavorite(resource);
 
-      // Cancel ongoing requests to avoid overwriting
       await queryClient.cancelQueries({ queryKey: FAVORITES_QUERY_KEY });
 
-      // Save previous data for rollback
       const previousFavorites = queryClient.getQueryData(FAVORITES_QUERY_KEY) || [];
 
-      // Update UI immediately (optimistic)
       queryClient.setQueryData(FAVORITES_QUERY_KEY, (current = []) => [
         optimisticFavorite,
         ...current,
@@ -85,7 +63,7 @@ export function useFavorites() {
       return { previousFavorites, optimisticFavorite };
     },
 
-    // Step 2: Error handling (rollback on failure)
+    // si falla, rollback
     onError: (_error, _resource, context) => {
       if (context?.previousFavorites) {
         queryClient.setQueryData(FAVORITES_QUERY_KEY, context.previousFavorites);
@@ -98,19 +76,15 @@ export function useFavorites() {
     },
   });
 
-  // ============================================================================
-  // MUTATION: Remove favorite with optimistic update
-  // ============================================================================
+  // eliminar favorito con actualización optimista
   const removeFavoriteMutation = useMutation({
     mutationFn: favoritesApi.removeFavorite,
 
-    // Step 1: Optimistic update (immediate UI feedback)
     onMutate: async (resourceId) => {
       await queryClient.cancelQueries({ queryKey: FAVORITES_QUERY_KEY });
 
       const previousFavorites = queryClient.getQueryData(FAVORITES_QUERY_KEY) || [];
 
-      // Update UI immediately (optimistic)
       queryClient.setQueryData(FAVORITES_QUERY_KEY, (current = []) =>
         current.filter((item) => item.referencia_id !== resourceId)
       );
@@ -118,22 +92,20 @@ export function useFavorites() {
       return { previousFavorites, resourceId };
     },
 
-    // Step 2: Error handling (rollback on failure)
+    // si falla, rollback
     onError: (_error, _resourceId, context) => {
       if (context?.previousFavorites) {
         queryClient.setQueryData(FAVORITES_QUERY_KEY, context.previousFavorites);
       }
     },
 
-    // Step 3: Refresh data after mutation
+    // refrescar luego de la mutación
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: FAVORITES_QUERY_KEY });
     },
   });
 
-  // ============================================================================
-  // Action: Toggle favorite (add or remove)
-  // ============================================================================
+  // toggle: agrega o elimina según el estado actual
   const toggleFavorite = (resource) => {
     if (!resource?.id) {
       console.warn('toggleFavorite: resource.id is required');
@@ -148,33 +120,24 @@ export function useFavorites() {
     }
   };
 
-  // ============================================================================
-  // Return hook API
-  // ============================================================================
   return {
-    // Data: From query (single source of truth)
     favoriteItems: favoritesQuery.data || [],
 
-    // Derived: Computed from query data
     isFavorite,
 
-    // Query state
     isLoading: favoritesQuery.isLoading,
     isError: favoritesQuery.isError,
     error: favoritesQuery.error,
 
-    // Mutation state
     isUpdatingFavorite:
       addFavoriteMutation.isPending || removeFavoriteMutation.isPending,
     isAddingFavorite: addFavoriteMutation.isPending,
     isRemovingFavorite: removeFavoriteMutation.isPending,
 
-    // Actions
     toggleFavorite,
     addFavorite: addFavoriteMutation.mutate,
     removeFavorite: removeFavoriteMutation.mutate,
 
-    // Advanced: Direct access to query for components that need it
     favoritesQuery,
   };
 }

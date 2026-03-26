@@ -1,7 +1,9 @@
+// punto de entrada. si esto no arranca, todo lo demás da igual.
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Toaster } from 'sonner'
 import './index.css'
 import 'leaflet/dist/leaflet.css'
 import { useThemeStore } from './store/useThemeStore'
@@ -28,6 +30,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
+      <Toaster richColors position="top-right" />
     </QueryClientProvider>
   </StrictMode>,
 )

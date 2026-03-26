@@ -1,3 +1,4 @@
+// websockets con Laravel Echo. si VITE_REVERB_APP_KEY no está, simplemente no hace nada.
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
 

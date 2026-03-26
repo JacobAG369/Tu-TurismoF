@@ -1,3 +1,4 @@
+// estado del mapa: categoría activa, marcador seleccionado y centro. pequeño pero necesario.
 import { create } from 'zustand';
 
 export const useMapStore = create((set) => ({

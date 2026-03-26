@@ -1,3 +1,4 @@
+// instancia de axios con el token inyectado automáticamente. si las peticiones fallan, empieza aquí.
 import axios from 'axios';
 
 const api = axios.create({

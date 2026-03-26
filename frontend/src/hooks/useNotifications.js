@@ -1,3 +1,4 @@
+// notificaciones en tiempo real con actualizaciones optimistas. marca leído, borra, todo sin esperar.
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { notificationsApi } from '../api/notifications';
 import { useAuthStore } from '../store/useAuthStore';
@@ -5,39 +6,22 @@ import { useAuthStore } from '../store/useAuthStore';
 const NOTIFICATIONS_QUERY_KEY = ['notifications'];
 
 /**
- * useNotifications Hook
- * 
- * SINGLE SOURCE OF TRUTH: useQuery
- * - Notifications data lives only in React Query
- * - Mutations automatically sync via optimistic updates + invalidation
- * - unreadCount() and hasUnread() derive state from query data
- * - No duplicate state in Zustand
- * 
- * Optimistic Updates:
- * - onMutate: Update UI immediately
- * - onError: Rollback if request fails
- * - onSettled: Refetch to ensure consistency
- * 
- * Architecture: Clean Architecture + TanStack Query best practices
+ * useNotifications Hook — fuente única de verdad via useQuery con actualizaciones optimistas.
  */
 export function useNotifications() {
   const queryClient = useQueryClient();
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  // ============================================================================
-  // QUERY: Single source of truth for notifications data
-  // ============================================================================
+  // fuente única de verdad para notificaciones
   const notificationsQuery = useQuery({
     queryKey: NOTIFICATIONS_QUERY_KEY,
     queryFn: notificationsApi.getNotifications,
     enabled: isAuthenticated,
-    staleTime: 30000, // 30 seconds (more fresh than favorites)
+    staleTime: 30000,
     placeholderData: [],
   });
 
-  // ============================================================================
-  // DERIVED STATE: Computed from query data
-  // ============================================================================
+  // estado derivado: calculado desde los datos del query
   const unreadCount = () => {
     if (!notificationsQuery.data) return 0;
     return notificationsQuery.data.filter((notif) => !notif.leido).length;
@@ -52,9 +36,7 @@ export function useNotifications() {
     return notificationsQuery.data.filter((notif) => !notif.leido);
   };
 
-  // ============================================================================
-  // MUTATION: Mark notification as read (with optimistic update)
-  // ============================================================================
+  // marcar como leído con actualización optimista
   const markAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAsRead,
 
@@ -64,7 +46,7 @@ export function useNotifications() {
       const previousNotifications =
         queryClient.getQueryData(NOTIFICATIONS_QUERY_KEY) || [];
 
-      // Optimistic update: mark as read immediately
+      // actualizar optimistamente: marcar como leído de inmediato
       queryClient.setQueryData(NOTIFICATIONS_QUERY_KEY, (current = []) =>
         current.map((notif) =>
           notif.id === notificationId ? { ...notif, leido: true } : notif
@@ -88,9 +70,7 @@ export function useNotifications() {
     },
   });
 
-  // ============================================================================
-  // MUTATION: Mark all as read (with optimistic update)
-  // ============================================================================
+  // marcar todas como leídas con actualización optimista
   const markAllAsReadMutation = useMutation({
     mutationFn: notificationsApi.markAllAsRead,
 
@@ -100,7 +80,7 @@ export function useNotifications() {
       const previousNotifications =
         queryClient.getQueryData(NOTIFICATIONS_QUERY_KEY) || [];
 
-      // Optimistic update: mark all as read immediately
+      // actualizar optimistamente: marcar todas como leídas
       queryClient.setQueryData(NOTIFICATIONS_QUERY_KEY, (current = []) =>
         current.map((notif) => ({ ...notif, leido: true }))
       );
@@ -122,9 +102,7 @@ export function useNotifications() {
     },
   });
 
-  // ============================================================================
-  // MUTATION: Delete notification (with optimistic update)
-  // ============================================================================
+  // eliminar una notificación con actualización optimista
   const deleteNotificationMutation = useMutation({
     mutationFn: notificationsApi.deleteNotification,
 
@@ -134,7 +112,7 @@ export function useNotifications() {
       const previousNotifications =
         queryClient.getQueryData(NOTIFICATIONS_QUERY_KEY) || [];
 
-      // Optimistic update: remove notification immediately
+      // actualizar optimistamente: eliminar notificación de inmediato
       queryClient.setQueryData(NOTIFICATIONS_QUERY_KEY, (current = []) =>
         current.filter((notif) => notif.id !== notificationId)
       );
@@ -156,9 +134,7 @@ export function useNotifications() {
     },
   });
 
-  // ============================================================================
-  // MUTATION: Delete all notifications (with optimistic update)
-  // ============================================================================
+  // eliminar todas las notificaciones con actualización optimista
   const deleteAllMutation = useMutation({
     mutationFn: notificationsApi.deleteAllNotifications,
 
@@ -168,7 +144,7 @@ export function useNotifications() {
       const previousNotifications =
         queryClient.getQueryData(NOTIFICATIONS_QUERY_KEY) || [];
 
-      // Optimistic update: clear all immediately
+      // actualizar optimistamente: limpiar todo de inmediato
       queryClient.setQueryData(NOTIFICATIONS_QUERY_KEY, []);
 
       return { previousNotifications };
@@ -188,36 +164,27 @@ export function useNotifications() {
     },
   });
 
-  // ============================================================================
-  // Return hook API
-  // ============================================================================
   return {
-    // Data: From query (single source of truth)
     notifications: notificationsQuery.data || [],
 
-    // Derived: Computed from query data
     unreadCount: unreadCount(),
     unreadNotifications: getUnreadNotifications(),
     hasUnread: hasUnread(),
 
-    // Query state
     isLoading: notificationsQuery.isLoading,
     isError: notificationsQuery.isError,
     error: notificationsQuery.error,
 
-    // Mutation states
     isMarkingAsRead: markAsReadMutation.isPending,
     isMarkingAllAsRead: markAllAsReadMutation.isPending,
     isDeleting: deleteNotificationMutation.isPending,
     isDeletingAll: deleteAllMutation.isPending,
 
-    // Actions
     markAsRead: markAsReadMutation.mutate,
     markAllAsRead: markAllAsReadMutation.mutate,
     deleteNotification: deleteNotificationMutation.mutate,
     deleteAllNotifications: deleteAllMutation.mutate,
 
-    // Advanced: Direct access to query for components that need it
     notificationsQuery,
   };
 }

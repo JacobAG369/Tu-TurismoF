@@ -14,6 +14,9 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteImport } from './routes/admin'
 
 const RegisterLazyRouteImport = createFileRoute('/register')()
+const RecuperarContrasenaLazyRouteImport = createFileRoute(
+  '/recuperar-contrasena',
+)()
 const ProfileLazyRouteImport = createFileRoute('/profile')()
 const MapLazyRouteImport = createFileRoute('/map')()
 const LoginLazyRouteImport = createFileRoute('/login')()
@@ -26,6 +29,13 @@ const RegisterLazyRoute = RegisterLazyRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/register.lazy').then((d) => d.Route))
+const RecuperarContrasenaLazyRoute = RecuperarContrasenaLazyRouteImport.update({
+  id: '/recuperar-contrasena',
+  path: '/recuperar-contrasena',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/recuperar-contrasena.lazy').then((d) => d.Route),
+)
 const ProfileLazyRoute = ProfileLazyRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -70,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginLazyRoute
   '/map': typeof MapLazyRoute
   '/profile': typeof ProfileLazyRoute
+  '/recuperar-contrasena': typeof RecuperarContrasenaLazyRoute
   '/register': typeof RegisterLazyRoute
 }
 export interface FileRoutesByTo {
@@ -80,6 +91,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginLazyRoute
   '/map': typeof MapLazyRoute
   '/profile': typeof ProfileLazyRoute
+  '/recuperar-contrasena': typeof RecuperarContrasenaLazyRoute
   '/register': typeof RegisterLazyRoute
 }
 export interface FileRoutesById {
@@ -91,6 +103,7 @@ export interface FileRoutesById {
   '/login': typeof LoginLazyRoute
   '/map': typeof MapLazyRoute
   '/profile': typeof ProfileLazyRoute
+  '/recuperar-contrasena': typeof RecuperarContrasenaLazyRoute
   '/register': typeof RegisterLazyRoute
 }
 export interface FileRouteTypes {
@@ -103,6 +116,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/map'
     | '/profile'
+    | '/recuperar-contrasena'
     | '/register'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -113,6 +127,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/map'
     | '/profile'
+    | '/recuperar-contrasena'
     | '/register'
   id:
     | '__root__'
@@ -123,6 +138,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/map'
     | '/profile'
+    | '/recuperar-contrasena'
     | '/register'
   fileRoutesById: FileRoutesById
 }
@@ -134,6 +150,7 @@ export interface RootRouteChildren {
   LoginLazyRoute: typeof LoginLazyRoute
   MapLazyRoute: typeof MapLazyRoute
   ProfileLazyRoute: typeof ProfileLazyRoute
+  RecuperarContrasenaLazyRoute: typeof RecuperarContrasenaLazyRoute
   RegisterLazyRoute: typeof RegisterLazyRoute
 }
 
@@ -144,6 +161,13 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/recuperar-contrasena': {
+      id: '/recuperar-contrasena'
+      path: '/recuperar-contrasena'
+      fullPath: '/recuperar-contrasena'
+      preLoaderRoute: typeof RecuperarContrasenaLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/profile': {
@@ -206,6 +230,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginLazyRoute: LoginLazyRoute,
   MapLazyRoute: MapLazyRoute,
   ProfileLazyRoute: ProfileLazyRoute,
+  RecuperarContrasenaLazyRoute: RecuperarContrasenaLazyRoute,
   RegisterLazyRoute: RegisterLazyRoute,
 }
 export const routeTree = rootRouteImport

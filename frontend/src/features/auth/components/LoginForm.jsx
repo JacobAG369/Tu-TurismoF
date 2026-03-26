@@ -2,6 +2,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Lock, LogIn, Mail, Eye, EyeOff } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../../../components/ui/form';
 import { Input } from '../../../components/ui/input';
 import { useLogin } from '../hooks/useLogin';
@@ -73,9 +74,9 @@ export function LoginForm({ onSuccess }) {
             <FormItem>
               <div className="flex items-center justify-between gap-4">
                 <FormLabel htmlFor="login-password">Contraseña</FormLabel>
-                <a href="#" className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white">
+                <Link to="/recuperar-contrasena" className="text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors hover:text-slate-900 dark:hover:text-white">
                   Olvidé mi contraseña
-                </a>
+                </Link>
               </div>
               <div className="relative">
                 <Lock className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
