@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  baseURL: `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/api/v1`,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -11,7 +11,7 @@ const api = axios.create({
 });
 
 export const initializeCsrfCookie = async () => {
-  await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
+  await axios.get(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'}/sanctum/csrf-cookie`, {
     withCredentials: true,
     headers: {
       Accept: 'application/json',
