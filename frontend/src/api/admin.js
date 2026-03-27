@@ -93,8 +93,8 @@ export const adminApi = {
   },
 
   // Backup methods
-  createBackup: async (collectionType = null) => {
-    const response = await api.post('/admin/backup', { collection: collectionType });
+  createBackup: async (type = 'full') => {
+    const response = await api.post('/admin/backup', { type });
     return response.data.data;
   },
 

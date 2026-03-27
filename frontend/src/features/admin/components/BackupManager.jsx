@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Download, Loader, Plus, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
 import { Button } from '../../../components/ui/button';
@@ -15,20 +15,42 @@ const BACKUP_TYPES = [
 
 export function BackupManager() {
   const [isBackingUp, setIsBackingUp] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [backups, setBackups] = useState([]);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchBackups = async () => {
+      try {
+        const data = await adminApi.listBackups();
+        // data.timestamp is the timestamp in milliseconds
+        // Convert numbers back to Date objects for the UI
+        const withDates = data.map(b => ({
+          ...b,
+          timestamp: new Date(b.timestamp)
+        }));
+        setBackups(withDates);
+      } catch (error) {
+        console.error('Error fetching backups:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchBackups();
+  }, []);
 
   const handleCreateBackup = async (type) => {
     setIsBackingUp(true);
     try {
-      const result = await adminApi.createBackup(type === 'full' ? null : type);
+      const result = await adminApi.createBackup(type);
       
       const newBackup = {
-        id: Date.now(),
+        id: result.filename,
         type: type,
         timestamp: new Date(),
         status: 'completado',
-        size: Math.random() * 50 + 5, // Mock size
+        size: 0, // No disponemos del tamaño inmediato desde create pero se listará en el próximo refresh
+        url: result.url
       };
       
       setBackups((prev) => [newBackup, ...prev]);
@@ -50,18 +72,23 @@ export function BackupManager() {
 
   const handleDownloadBackup = async (backup) => {
     try {
-      const blob = await adminApi.downloadBackup(backup.id);
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `backup-${backup.type}-${backup.timestamp.getTime()}.zip`;
-      a.click();
-      window.URL.revokeObjectURL(url);
-      
       toast({
         title: 'Descarga iniciada',
         description: 'El backup se está descargando.',
       });
+
+      if (backup.url) {
+        window.open(backup.url, '_blank');
+        return;
+      }
+
+      const blob = await adminApi.downloadBackup(backup.id);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = backup.id; 
+      a.click();
+      window.URL.revokeObjectURL(url);
     } catch (_error) {
       toast({
         title: 'Error',
@@ -82,11 +109,10 @@ export function BackupManager() {
         <CardContent>
           <div className="space-y-3">
             {BACKUP_TYPES.map((type) => (
-              <button
+              <div
                 key={type.id}
                 onClick={() => handleCreateBackup(type.id)}
-                disabled={isBackingUp}
-                className="flex w-full items-center justify-between rounded-lg border border-slate-200 p-4 transition-all hover:border-primary hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:hover:bg-slate-700"
+                className={`flex w-full items-center justify-between rounded-lg border border-slate-200 p-4 transition-all hover:border-primary hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-700 cursor-pointer ${isBackingUp ? 'opacity-50 pointer-events-none' : ''}`}
               >
                 <div className="text-left">
                   <p className="font-medium text-slate-900 dark:text-white">{type.label}</p>
@@ -102,7 +128,7 @@ export function BackupManager() {
                     <Plus className="h-4 w-4" />
                   )}
                 </Button>
-              </button>
+              </div>
             ))}
           </div>
 
